@@ -1,0 +1,68 @@
+{
+  "phases": [
+    {
+      "routes": [
+        {
+          "path": "/csw?service=CSW&request=GetRecords",
+          "headers": {
+            "content-type": "application/xml"
+          },
+          "body": "<?xml version=\"1.0\"?><csw:GetRecordsResponse xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\"><csw:SearchStatus timestamp=\"2026-10-12T01:00:00Z\"/><csw:SearchResults numberOfRecordsMatched=\"2\" numberOfRecordsReturned=\"1\" nextRecord=\"2\"><csw:BriefRecord><dc:identifier>route-map-1</dc:identifier><dc:title>开放区域底图</dc:title></csw:BriefRecord></csw:SearchResults></csw:GetRecordsResponse>"
+        },
+        {
+          "path": "/capabilities",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": "{\"version\": \"2.0.2\", \"typeNames\": [\"csw:Record\"], \"elementSetNames\": [\"brief\", \"full\"], \"delegates\": [\"/regional/csw\"], \"hopCount\": 2}"
+        },
+        {
+          "path": "/regional/csw",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": "{\"catalog\": \"regional\", \"delegates\": [\"/csw\"], \"records\": [{\"identifier\": \"route-map-1\", \"title\": \"同号区域资料\"}], \"complete\": false, \"exceptions\": [{\"catalog\": \"county-b\", \"code\": \"NoApplicableCode\"}]}"
+        },
+        {
+          "path": "/records/route-map-1",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": "{\"identifier\": \"route-map-1\", \"owner\": \"park\", \"links\": [\"/assets/map1\"]}"
+        }
+      ]
+    },
+    {
+      "routes": [
+        {
+          "path": "/csw?service=CSW&request=GetRecords",
+          "headers": {
+            "content-type": "application/xml"
+          },
+          "body": "<?xml version=\"1.0\"?><csw:GetRecordsResponse xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\"><csw:SearchStatus timestamp=\"2026-10-12T01:00:00Z\"/><csw:SearchResults numberOfRecordsMatched=\"2\" numberOfRecordsReturned=\"1\" nextRecord=\"0\"><csw:BriefRecord><dc:identifier>route-map-2</dc:identifier><dc:title>开放区域底图</dc:title></csw:BriefRecord></csw:SearchResults></csw:GetRecordsResponse>"
+        },
+        {
+          "path": "/capabilities",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": "{\"version\": \"2.0.2\", \"typeNames\": [\"csw:Record\"], \"elementSetNames\": [\"brief\", \"full\"], \"delegates\": [\"/regional/csw\"], \"hopCount\": 2}"
+        },
+        {
+          "path": "/regional/csw",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": "{\"catalog\": \"regional\", \"delegates\": [\"/csw\"], \"records\": [{\"identifier\": \"route-map-1\", \"title\": \"同号区域资料\"}], \"complete\": false, \"exceptions\": [{\"catalog\": \"county-b\", \"code\": \"NoApplicableCode\"}]}"
+        },
+        {
+          "path": "/records/route-map-1",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": "{\"identifier\": \"route-map-1\", \"owner\": \"park\", \"links\": [\"/assets/map1\"]}"
+        }
+      ]
+    }
+  ]
+}
