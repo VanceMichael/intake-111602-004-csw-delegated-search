@@ -11,6 +11,7 @@ export class Catalog {
   async initialize() {
     await mkdir(join(this.root, 'objects'), { recursive: true });
     await mkdir(join(this.root, 'receipts'), { recursive: true });
+    await mkdir(join(this.root, 'harvests'), { recursive: true });
     return this;
   }
 
@@ -60,5 +61,29 @@ export class Catalog {
     const bytes = await readFile(join(this.root, 'objects', digest));
     if (createHash('sha256').update(bytes).digest('hex') !== digest) throw new Error('原件校验失败');
     return bytes;
+  }
+
+  async saveHarvest(report) {
+    if (!report?.id || !/^[\w-]+$/.test(report.id)) throw new Error('无效的跨目录报告编号');
+    const operation = this.serial.then(async () => {
+      await this.initialize();
+      const path = join(this.root, 'harvests', `${report.id}.json`);
+      await this.atomic(path, Buffer.from(JSON.stringify(report, null, 2)));
+      return report;
+    });
+    this.serial = operation.catch(() => {});
+    return operation;
+  }
+
+  async listHarvests() {
+    await this.initialize();
+    const files = (await readdir(join(this.root, 'harvests'))).filter(name => name.endsWith('.json')).sort();
+    return Promise.all(files.map(name => readFile(join(this.root, 'harvests', name), 'utf8').then(JSON.parse)));
+  }
+
+  async harvestReport(id) {
+    if (!/^[\w-]+$/.test(id || '')) throw new Error('无效的跨目录报告编号');
+    const report = JSON.parse(await readFile(join(this.root, 'harvests', `${id}.json`), 'utf8'));
+    return report;
   }
 }

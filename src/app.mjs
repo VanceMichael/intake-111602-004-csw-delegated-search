@@ -2,6 +2,7 @@ import { createServer } from 'node:http';
 import { fileURLToPath } from 'node:url';
 import { Catalog } from './catalog.mjs';
 import { decode } from './decode.mjs';
+import { runHarvest } from './harvest.mjs';
 import { SourceClient } from './transport.mjs';
 import { profile } from './profile.mjs';
 
@@ -36,6 +37,25 @@ export async function startApplication({ source, root, port = 0 }) {
       if (request.method === 'GET' && url.pathname.startsWith('/objects/')) {
         response.setHeader('content-type', 'application/octet-stream');
         return response.end(await catalog.object(url.pathname.split('/').at(-1)));
+      }
+      if (request.method === 'POST' && url.pathname === '/harvests') {
+        const chunks = [];
+        for await (const chunk of request) chunks.push(chunk);
+        const input = JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}');
+        const roots = Array.isArray(input.roots) && input.roots.length ? input.roots : profile.harvestRoots;
+        const report = await runHarvest({ client: new SourceClient(source), roots,
+          conditions: input.conditions || {}, hopBudget: Number.isFinite(input.hopBudget) ? input.hopBudget : 2,
+          full: input.full !== false, catalog });
+        await catalog.saveHarvest(report);
+        response.statusCode = 201;
+        return response.end(JSON.stringify(report));
+      }
+      if (request.method === 'GET' && url.pathname === '/harvests') {
+        return response.end(JSON.stringify(await catalog.listHarvests()));
+      }
+      if (request.method === 'GET' && url.pathname.startsWith('/harvests/')) {
+        const report = await catalog.harvestReport(url.pathname.split('/').at(-1));
+        return response.end(JSON.stringify(report));
       }
       response.statusCode = 404;
       response.end(JSON.stringify({ error: '没有此操作' }));

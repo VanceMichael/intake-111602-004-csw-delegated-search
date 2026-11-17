@@ -1,0 +1,110 @@
+{
+  "phases": [
+    {
+      "routes": [
+        {
+          "path": "/csw?service=CSW&request=GetRecords",
+          "headers": {
+            "content-type": "application/xml"
+          },
+          "body": "<?xml version=\"1.0\"?><csw:GetRecordsResponse xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\"><csw:SearchStatus timestamp=\"2026-10-12T01:00:00Z\"/><csw:SearchResults numberOfRecordsMatched=\"2\" numberOfRecordsReturned=\"1\" nextRecord=\"2\"><csw:BriefRecord><dc:identifier>route-map-1</dc:identifier><dc:title>开放区域底图</dc:title></csw:BriefRecord></csw:SearchResults></csw:GetRecordsResponse>"
+        },
+        {
+          "path": "/capabilities",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": "{\"version\": \"2.0.2\", \"catalog\": \"root-gateway\", \"typeNames\": [\"csw:Record\"], \"elementSetNames\": [\"brief\", \"full\"], \"delegates\": [\"/regional/csw\", \"/county-a/csw\"], \"hopCount\": 2, \"recordRetrieval\": {\"mode\": \"csw-getrecordbyid\", \"path\": \"/csw\", \"elementSetName\": \"full\"}}"
+        },
+        {
+          "path": "/regional/csw",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": "{\"catalog\": \"regional\", \"delegates\": [\"/csw\"], \"records\": [{\"identifier\": \"route-map-1\", \"title\": \"同号区域资料\"}, {\"identifier\": \"regional-brief-7\", \"title\": \"区域专线候选\"}], \"complete\": false, \"exceptions\": [{\"catalog\": \"county-b\", \"code\": \"NoApplicableCode\"}]}"
+        },
+        {
+          "path": "/regional/capabilities",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": "{\"catalog\": \"regional\", \"typeNames\": [\"csw:Record\"], \"elementSetNames\": [\"brief\"], \"delegates\": [\"/csw\"], \"hopCount\": 2, \"recordRetrieval\": {\"mode\": \"record-link\", \"pathTemplate\": \"/records/{identifier}\"}}"
+        },
+        {
+          "path": "/county-a/csw",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": "{\"catalog\": \"county-a\", \"delegates\": [], \"records\": [{\"identifier\": \"route-map-1\", \"title\": \"县域同名底图\"}, {\"identifier\": \"county-a-2\", \"title\": \"县域研学点\"}], \"complete\": true, \"exceptions\": []}"
+        },
+        {
+          "path": "/county-a/capabilities",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": "{\"catalog\": \"county-a\", \"typeNames\": [\"csw:Record\"], \"elementSetNames\": [\"brief\"], \"delegates\": [], \"recordRetrieval\": {\"mode\": \"record-link\", \"pathTemplate\": \"/county-a/records/{identifier}\"}}"
+        },
+        {
+          "path": "/county-a/records/county-a-2",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": "{\"identifier\": \"county-a-2\", \"owner\": \"county-a\", \"institution\": \"county-a-catalog\", \"type\": \"dataset\", \"links\": [\"/assets/county-a-2\"]}"
+        },
+        {
+          "path": "/county-a/records/route-map-1",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": "{\"identifier\": \"route-map-1\", \"owner\": \"county-a\", \"institution\": \"county-a-catalog\", \"type\": \"dataset\", \"links\": [\"/assets/county-a-map1\"]}"
+        },
+        {
+          "path": "/void/csw",
+          "status": 500,
+          "headers": {
+            "content-type": "application/xml"
+          },
+          "body": "<?xml version=\"1.0\"?><ows:ExceptionReport xmlns:ows=\"http://www.opengis.net/ows\" version=\"2.0.0\"><ows:Exception exceptionCode=\"NoApplicableCode\"><ows:ExceptionText>目录服务暂时不可用</ows:ExceptionText></ows:Exception></ows:ExceptionReport>"
+        },
+        {
+          "path": "/void/capabilities",
+          "status": 503,
+          "headers": {
+            "content-type": "text/plain"
+          },
+          "body": "unavailable"
+        },
+        {
+          "path": "/broken/csw",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": "{\"catalog\":\"broken\"}",
+          "disconnect": true
+        },
+        {
+          "path": "/broken/capabilities",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": "{\"catalog\":\"broken\"}",
+          "disconnect": true
+        },
+        {
+          "path": "/records/route-map-1",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": "{\"identifier\": \"route-map-1\", \"owner\": \"regional\", \"institution\": \"regional-catalog\", \"links\": [\"/assets/regional-map1\"]}"
+        },
+        {
+          "path": "/records/regional-brief-7",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": "{\"identifier\": \"regional-brief-7\", \"owner\": \"regional\", \"institution\": \"regional-catalog\", \"links\": [\"/assets/regional-7\"]}"
+        }
+      ]
+    }
+  ]
+}

@@ -29,8 +29,16 @@ export async function startSource({ scenario = 'ordinary', port = 0 } = {}) {
       const routes = config.phases[phase].routes;
       const url = new URL(path, 'http://localhost');
       const canonical = value => { const parsed = new URL(value, 'http://localhost'); parsed.searchParams.sort(); return parsed.pathname + parsed.search; };
-      let route = await dispatch({ url, method: request.method, phase, state: domainState, headers: request.headers });
-      if (!route) route = routes.find(item => canonical(item.path) === canonical(path) && (item.method || 'GET') === request.method);
+      // 夹具显式配置优先；未配置时再交给动态领域视图。
+      const sameMethod = routes.filter(item => (item.method || 'GET') === request.method);
+      const matchParams = candidate => {
+        const expected = new URL(candidate, 'http://localhost').searchParams;
+        for (const [key, value] of expected) if (url.searchParams.get(key) !== value) return false;
+        return true;
+      };
+      const fixtureRoute = sameMethod.find(item => canonical(item.path) === canonical(path))
+        || sameMethod.find(item => new URL(item.path, 'http://localhost').pathname === url.pathname && matchParams(item.path));
+      let route = fixtureRoute || await dispatch({ url, method: request.method, phase, scenario, state: domainState, headers: request.headers });
       if (route?.json !== undefined) route = { ...route, body: JSON.stringify(route.json), headers: { 'content-type': 'application/json', ...route.headers } };
       requests.push({ path, phase, method: request.method,
         headers: Object.fromEntries(Object.entries(request.headers).filter(([name]) => ['if-match', 'range', 'accept', 'x-institution'].includes(name))) });

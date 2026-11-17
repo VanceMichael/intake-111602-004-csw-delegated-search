@@ -14,14 +14,14 @@
           "headers": {
             "content-type": "application/json"
           },
-          "body": "{\"version\": \"2.0.2\", \"typeNames\": [\"csw:Record\"], \"elementSetNames\": [\"brief\", \"full\"], \"delegates\": [\"/regional/csw\"], \"hopCount\": 2}"
+          "body": "{\"version\": \"2.0.2\", \"catalog\": \"root-gateway\", \"typeNames\": [\"csw:Record\"], \"elementSetNames\": [\"brief\", \"full\"], \"delegates\": [\"/regional/csw\"], \"hopCount\": 2, \"recordRetrieval\": {\"mode\": \"csw-getrecordbyid\", \"path\": \"/csw\", \"elementSetName\": \"full\"}}"
         },
         {
-          "path": "/regional/csw",
+          "path": "/regional/capabilities",
           "headers": {
             "content-type": "application/json"
           },
-          "body": "{\"catalog\": \"regional\", \"delegates\": [\"/csw\"], \"records\": [{\"identifier\": \"route-map-1\", \"title\": \"同号区域资料\"}], \"complete\": false, \"exceptions\": [{\"catalog\": \"county-b\", \"code\": \"NoApplicableCode\"}]}"
+          "body": "{\"catalog\": \"regional\", \"typeNames\": [\"csw:Record\"], \"elementSetNames\": [\"brief\"], \"delegates\": [\"/csw?service=CSW&request=GetRecords\"], \"hopCount\": 2, \"recordRetrieval\": {\"mode\": \"record-link\", \"pathTemplate\": \"/records/{identifier}\"}}"
         },
         {
           "path": "/records/route-map-1",
@@ -46,14 +46,14 @@
           "headers": {
             "content-type": "application/json"
           },
-          "body": "{\"version\": \"2.0.2\", \"typeNames\": [\"csw:Record\"], \"elementSetNames\": [\"brief\", \"full\"], \"delegates\": [\"/regional/csw\"], \"hopCount\": 2}"
+          "body": "{\"version\": \"2.0.2\", \"catalog\": \"root-gateway\", \"typeNames\": [\"csw:Record\"], \"elementSetNames\": [\"brief\", \"full\"], \"delegates\": [\"/regional/csw\"], \"hopCount\": 2, \"recordRetrieval\": {\"mode\": \"csw-getrecordbyid\", \"path\": \"/csw\", \"elementSetName\": \"full\"}}"
         },
         {
-          "path": "/regional/csw",
+          "path": "/regional/capabilities",
           "headers": {
             "content-type": "application/json"
           },
-          "body": "{\"catalog\": \"regional\", \"delegates\": [\"/csw\"], \"records\": [{\"identifier\": \"route-map-1\", \"title\": \"同号区域资料\"}], \"complete\": false, \"exceptions\": [{\"catalog\": \"county-b\", \"code\": \"NoApplicableCode\"}]}"
+          "body": "{\"catalog\": \"regional\", \"typeNames\": [\"csw:Record\"], \"elementSetNames\": [\"brief\"], \"delegates\": [\"/csw?service=CSW&request=GetRecords\"], \"hopCount\": 2, \"recordRetrieval\": {\"mode\": \"record-link\", \"pathTemplate\": \"/records/{identifier}\"}}"
         },
         {
           "path": "/records/route-map-1",

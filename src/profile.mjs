@@ -6,5 +6,8 @@ export const profile = {
     "returned",
     "nextRecord",
     "records"
+  ],
+  "harvestRoots": [
+    "/csw?service=CSW&request=GetRecords"
   ]
 };
