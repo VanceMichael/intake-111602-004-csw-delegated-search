@@ -1,0 +1,71 @@
+{
+  "phases": [
+    {
+      "routes": [
+        {
+          "path": "/capabilities",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": "{\"version\": \"2.0.2\", \"typeNames\": [\"csw:Record\", \"gmd:MD_Metadata\"], \"elementSetNames\": [\"brief\", \"summary\", \"full\"], \"delegates\": [\"/branch/csw\"], \"hopCount\": 3}"
+        },
+        {
+          "path": "/csw?service=CSW&request=GetRecords",
+          "headers": {
+            "content-type": "application/xml"
+          },
+          "body": "<?xml version=\"1.0\"?><csw:GetRecordsResponse xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\"><csw:SearchStatus timestamp=\"2026-11-12T01:00:00Z\"/><csw:SearchResults numberOfRecordsMatched=\"1\" numberOfRecordsReturned=\"1\" nextRecord=\"0\"><csw:Record><dc:identifier>fed-1</dc:identifier><dc:title>总站完整记录</dc:title></csw:Record></csw:SearchResults></csw:GetRecordsResponse>"
+        },
+        {
+          "path": "/csw?service=CSW&request=GetRecords&constraint=region%3Anorth",
+          "headers": {
+            "content-type": "application/xml"
+          },
+          "body": "<?xml version=\"1.0\"?><csw:GetRecordsResponse xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\"><csw:SearchStatus timestamp=\"2026-11-12T01:00:00Z\"/><csw:SearchResults numberOfRecordsMatched=\"1\" numberOfRecordsReturned=\"1\" nextRecord=\"0\"><csw:Record><dc:identifier>fed-1</dc:identifier><dc:title>总站完整记录</dc:title></csw:Record></csw:SearchResults></csw:GetRecordsResponse>"
+        },
+        {
+          "path": "/branch/csw",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": "{\"catalog\": \"branch\", \"delegates\": [\"/leaf/csw\"], \"records\": [], \"complete\": true, \"exceptions\": []}"
+        },
+        {
+          "path": "/branch/csw?constraint=region%3Anorth",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": "{\"catalog\": \"branch\", \"delegates\": [\"/leaf/csw\"], \"records\": [], \"complete\": true, \"exceptions\": []}"
+        },
+        {
+          "path": "/leaf/csw",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": "{\"catalog\": \"leaf\", \"delegates\": [\"/orphan/csw\"], \"records\": [{\"identifier\": \"fed-2\", \"title\": \"县站简报\"}], \"complete\": false, \"exceptions\": [{\"catalog\": \"county-x\", \"code\": \"NoApplicableCode\"}]}"
+        },
+        {
+          "path": "/leaf/csw?constraint=region%3Anorth",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": "{\"catalog\": \"leaf\", \"delegates\": [\"/orphan/csw\"], \"records\": [{\"identifier\": \"fed-2\", \"title\": \"县站简报\"}], \"complete\": false, \"exceptions\": [{\"catalog\": \"county-x\", \"code\": \"NoApplicableCode\"}]}"
+        },
+        {
+          "path": "/orphan/csw",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": "{\"catalog\": \"orphan\", \"delegates\": [], \"records\": [{\"identifier\": \"fed-3\", \"title\": \"无领取入口的资料\"}], \"complete\": true, \"exceptions\": []}"
+        },
+        {
+          "path": "/orphan/csw?constraint=region%3Anorth",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": "{\"catalog\": \"orphan\", \"delegates\": [], \"records\": [{\"identifier\": \"fed-3\", \"title\": \"无领取入口的资料\"}], \"complete\": true, \"exceptions\": []}"
+        }
+      ]
+    }
+  ]
+}

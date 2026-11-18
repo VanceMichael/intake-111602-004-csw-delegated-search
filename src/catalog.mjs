@@ -11,6 +11,7 @@ export class Catalog {
   async initialize() {
     await mkdir(join(this.root, 'objects'), { recursive: true });
     await mkdir(join(this.root, 'receipts'), { recursive: true });
+    await mkdir(join(this.root, 'reports'), { recursive: true });
     return this;
   }
 
@@ -60,5 +61,30 @@ export class Catalog {
     const bytes = await readFile(join(this.root, 'objects', digest));
     if (createHash('sha256').update(bytes).digest('hex') !== digest) throw new Error('原件校验失败');
     return bytes;
+  }
+
+  async saveReport(report) {
+    if (!report || typeof report.id !== 'string' || !/^[a-zA-Z0-9-]+$/.test(report.id)) {
+      throw new TypeError('跨目录领取报告缺少有效标识');
+    }
+    const operation = this.serial.then(async () => {
+      await this.initialize();
+      await this.atomic(join(this.root, 'reports', `${report.id}.json`),
+        Buffer.from(JSON.stringify(report, null, 2)));
+      return report;
+    });
+    this.serial = operation.catch(() => {});
+    return operation;
+  }
+
+  async listReports() {
+    await this.initialize();
+    const files = (await readdir(join(this.root, 'reports'))).filter(name => name.endsWith('.json')).sort();
+    return Promise.all(files.map(name => readFile(join(this.root, 'reports', name), 'utf8').then(JSON.parse)));
+  }
+
+  async readReport(id) {
+    if (!/^[a-zA-Z0-9-]+$/.test(id || '')) throw new Error('无效的报告标识');
+    return JSON.parse(await readFile(join(this.root, 'reports', `${id}.json`), 'utf8'));
   }
 }

@@ -4,6 +4,7 @@ import { Catalog } from './catalog.mjs';
 import { decode } from './decode.mjs';
 import { SourceClient } from './transport.mjs';
 import { profile } from './profile.mjs';
+import { runHarvest } from './federation.mjs';
 
 export async function previewOne(base, path = profile.previewPath) {
   const result = await new SourceClient(base).request(path);
@@ -33,6 +34,30 @@ export async function startApplication({ source, root, port = 0 }) {
         return response.end(JSON.stringify(receipt));
       }
       if (request.method === 'GET' && url.pathname === '/receipts') return response.end(JSON.stringify(await catalog.list()));
+      if (request.method === 'POST' && url.pathname === '/harvest') {
+        const chunks = [];
+        for await (const chunk of request) chunks.push(chunk);
+        const input = chunks.length ? JSON.parse(Buffer.concat(chunks)) : {};
+        const report = await runHarvest(new SourceClient(source), {
+          catalog,
+          entryPath: input.path || profile.previewPath,
+          condition: input.condition || null,
+          capabilitiesPath: input.capabilitiesPath || profile.capabilitiesPath,
+          ...(input.hopLimit !== undefined
+            ? { hopLimit: Number(input.hopLimit), explicitHopLimit: true }
+            : {})
+        });
+        await catalog.saveReport(report);
+        response.statusCode = 201;
+        return response.end(JSON.stringify(report));
+      }
+      if (request.method === 'GET' && url.pathname === '/harvests') {
+        return response.end(JSON.stringify(await catalog.listReports()));
+      }
+      if (request.method === 'GET' && url.pathname.startsWith('/harvests/')) {
+        const report = await catalog.readReport(url.pathname.split('/').at(-1));
+        return response.end(JSON.stringify(report));
+      }
       if (request.method === 'GET' && url.pathname.startsWith('/objects/')) {
         response.setHeader('content-type', 'application/octet-stream');
         return response.end(await catalog.object(url.pathname.split('/').at(-1)));

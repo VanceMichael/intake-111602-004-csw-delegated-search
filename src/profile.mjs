@@ -6,5 +6,11 @@ export const profile = {
     "returned",
     "nextRecord",
     "records"
-  ]
+  ],
+  "capabilitiesPath": "/capabilities",
+  "harvest": {
+    "hopLimit": 4,
+    "maxPages": 10,
+    "elementSet": "full"
+  }
 };
